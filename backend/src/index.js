@@ -6,6 +6,7 @@ import oneShotRouter from './routes/oneShot.js';
 import multiShotRouter from './routes/multiShot.js';
 import chainOfThoughtRouter from './routes/chainOfThought.js';
 import paramsControlRouter from './routes/paramsControl.js';
+import structuredOutputRouter from './routes/structuredOutput.js';
 
 const app = express();
 app.use(cors());
@@ -20,6 +21,7 @@ app.use('/api/prompt', oneShotRouter);
 app.use('/api/prompt', multiShotRouter);
 app.use('/api/prompt', chainOfThoughtRouter);
 app.use('/api/prompt', paramsControlRouter);
+app.use('/api/prompt', structuredOutputRouter);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

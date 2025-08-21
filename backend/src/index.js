@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import zeroShotRouter from './routes/zeroShot.js';
 import oneShotRouter from './routes/oneShot.js';
+import multiShotRouter from './routes/multiShot.js';
 
 const app = express();
 app.use(cors());
@@ -14,6 +15,7 @@ app.get('/health', (_req, res) => {
 
 app.use('/api/prompt', zeroShotRouter);
 app.use('/api/prompt', oneShotRouter);
+app.use('/api/prompt', multiShotRouter);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

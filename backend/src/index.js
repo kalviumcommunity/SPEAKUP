@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import zeroShotRouter from './routes/zeroShot.js';
+import oneShotRouter from './routes/oneShot.js';
 
 const app = express();
 app.use(cors());
@@ -12,6 +13,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/api/prompt', zeroShotRouter);
+app.use('/api/prompt', oneShotRouter);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

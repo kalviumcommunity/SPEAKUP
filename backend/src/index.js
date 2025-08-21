@@ -5,6 +5,7 @@ import zeroShotRouter from './routes/zeroShot.js';
 import oneShotRouter from './routes/oneShot.js';
 import multiShotRouter from './routes/multiShot.js';
 import chainOfThoughtRouter from './routes/chainOfThought.js';
+import paramsControlRouter from './routes/paramsControl.js';
 
 const app = express();
 app.use(cors());
@@ -18,6 +19,7 @@ app.use('/api/prompt', zeroShotRouter);
 app.use('/api/prompt', oneShotRouter);
 app.use('/api/prompt', multiShotRouter);
 app.use('/api/prompt', chainOfThoughtRouter);
+app.use('/api/prompt', paramsControlRouter);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {

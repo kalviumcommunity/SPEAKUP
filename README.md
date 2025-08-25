@@ -401,11 +401,7 @@ What it is: Documentation for your project.
 Why important: Helps others understand, use, and contribute.
 
 How to use:
-
 Add project goals.
-
 Explain features.
-
 List tech stack.
-
 Provide setup steps.

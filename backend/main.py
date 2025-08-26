@@ -2,64 +2,43 @@ import os
 from dotenv import load_dotenv
 import google.generativeai as genai
 
-# Load environment variables
-load_dotenv()
+# Load API key from backend/.env
+env_path = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(dotenv_path=env_path)
 api_key = os.getenv("GEMINI_API_KEY")
 
 # Configure Gemini
 genai.configure(api_key=api_key)
-model = genai.GenerativeModel("gemini-1.5-flash")  # or gemini-1.5-pro
 
+# Create model instance
+model = genai.GenerativeModel("gemini-1.5-flash")
 
-def generate_debate_one_shot(topic: str, style: str = "structured"):
-    """Generate structured debate arguments (One-shot prompting)"""
+# Multi-shot examples
+examples = [
+    {
+        "input": "Translate 'Good morning' into Spanish.",
+        "output": "Buenos días"
+    },
+    {
+        "input": "Translate 'How are you?' into Spanish.",
+        "output": "¿Cómo estás?"
+    },
+    {
+        "input": "Translate 'Thank you' into Spanish.",
+        "output": "Gracias"
+    }
+]
 
-    prompt = f"""
-    You are a debate moderator.
+# Build the multi-shot prompt
+multi_shot_prompt = "You are a helpful translation assistant. Translate English to Spanish.\n\n"
+for ex in examples:
+    multi_shot_prompt += f"English: {ex['input']}\nSpanish: {ex['output']}\n\n"
 
-    ## Example Debate (One-Shot Example)
-    Topic: "Should students wear uniforms?"
-    Debate Style: formal
-    Output (JSON):
-    {{
-        "topic": "Should students wear uniforms?",
-        "pro": [
-            "Promotes equality among students",
-            "Reduces distractions and peer pressure"
-        ],
-        "con": [
-            "Limits self-expression",
-            "May cause discomfort for some students"
-        ]
-    }}
+# Add the final query (real test)
+multi_shot_prompt += "English: Translate 'I love programming' into Spanish.\nSpanish:"
 
-    ## Now Generate New Debate
-    Topic: {topic}
-    Debate Style: {style}
-    Output strictly in JSON format:
-    {{
-        "topic": "{topic}",
-        "pro": ["argument 1", "argument 2"],
-        "con": ["argument 1", "argument 2"]
-    }}
-    """
+# Get response
+response = model.generate_content(multi_shot_prompt)
 
-    response = model.generate_content(prompt)
-    return response.text
-
-
-if __name__ == "__main__":
-    import sys
-
-    # Allow command-line input
-    if len(sys.argv) > 1:
-        topic = sys.argv[1]
-    else:
-        topic = "Should AI replace teachers?"
-
-    style = "formal"
-    output = generate_debate_one_shot(topic, style)
-
-    print("=== Debate Output (One-Shot) ===")
-    print(output)
-    print("===============================")
+# Print output
+print("Multi-Shot Prompt Output:\n", response.text)

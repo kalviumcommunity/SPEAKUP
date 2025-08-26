@@ -13,32 +13,36 @@ genai.configure(api_key=api_key)
 # Create model instance
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# Multi-shot examples
-examples = [
-    {
-        "input": "Translate 'Good morning' into Spanish.",
-        "output": "Buenos días"
-    },
-    {
-        "input": "Translate 'How are you?' into Spanish.",
-        "output": "¿Cómo estás?"
-    },
-    {
-        "input": "Translate 'Thank you' into Spanish.",
-        "output": "Gracias"
-    }
-]
+# -------- Dynamic Prompting Example --------
+# Let's say we want to build a personalized travel recommendation system.
+# The prompt changes dynamically based on user inputs.
 
-# Build the multi-shot prompt
-multi_shot_prompt = "You are a helpful translation assistant. Translate English to Spanish.\n\n"
-for ex in examples:
-    multi_shot_prompt += f"English: {ex['input']}\nSpanish: {ex['output']}\n\n"
+def generate_dynamic_prompt(user_name, interests, budget, location):
+    return f"""
+    You are an AI travel assistant.
 
-# Add the final query (real test)
-multi_shot_prompt += "English: Translate 'I love programming' into Spanish.\nSpanish:"
+    User Details:
+    - Name: {user_name}
+    - Interests: {", ".join(interests)}
+    - Budget: {budget}
+    - Current Location: {location}
 
-# Get response
-response = model.generate_content(multi_shot_prompt)
+    Task:
+    Suggest 3 personalized travel destinations with short explanations 
+    that match the user's interests and budget.
+    """
 
-# Print output
-print("Multi-Shot Prompt Output:\n", response.text)
+# Example: dynamic user input (could also come from API, DB, or CLI input)
+user_name = "Nidhi"
+interests = ["beaches", "history", "food"]
+budget = "₹50,000"
+location = "India"
+
+# Build prompt dynamically
+dynamic_prompt = generate_dynamic_prompt(user_name, interests, budget, location)
+
+# Get AI response
+response = model.generate_content(dynamic_prompt)
+
+# Print Output
+print("Dynamic Prompt Output:\n", response.text)

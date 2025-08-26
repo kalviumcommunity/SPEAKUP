@@ -1,40 +1,47 @@
 import os
 from dotenv import load_dotenv
 import google.generativeai as genai
+from google.generativeai.types import GenerationConfig
 
 # Load API key from backend/.env
 env_path = os.path.join(os.path.dirname(__file__), ".env")
 load_dotenv(dotenv_path=env_path)
 api_key = os.getenv("GEMINI_API_KEY")
 
-# Configure Gemini API
+# Configure the Gemini client
 genai.configure(api_key=api_key)
 
-# Initialize model
-model = genai.GenerativeModel("gemini-1.5-flash")
+# Define a schema for structured output
+schema = {
+    "type": "object",
+    "properties": {
+        "university_name": {"type": "string"},
+        "location": {"type": "string"},
+        "courses_offered": {"type": "array", "items": {"type": "string"}},
+        "eligibility": {"type": "string"},
+        "ranking": {"type": "integer"}
+    },
+    "required": ["university_name", "location", "courses_offered", "eligibility", "ranking"]
+}
 
-def generate_response(prompt, temperature=0.7):
-    """
-    Generate AI response with a given temperature.
-    Default temperature is 0.7 (balanced creativity).
-    """
-    response = model.generate_content(
-        prompt,
-        generation_config={
-            "temperature": temperature
-        }
+# Create the model with structured output
+model = genai.GenerativeModel(
+    model_name="gemini-1.5-flash",
+    generation_config=GenerationConfig(
+        response_mime_type="application/json",
+        response_schema=schema
     )
-    return response.text
+)
 
-if __name__ == "__main__":
-    # Example prompts with different temperatures
-    user_prompt = "Write a short story about a cat who learns to code."
+# Example input
+prompt = """
+Suggest a good university in India for Computer Science undergraduate program.
+Provide structured details.
+"""
 
-    print("\n--- Low Temperature (0.2) ---")
-    print(generate_response(user_prompt, temperature=0.2))
+# Generate structured output
+response = model.generate_content(prompt)
 
-    print("\n--- Medium Temperature (0.7) ---")
-    print(generate_response(user_prompt, temperature=0.7))
-
-    print("\n--- High Temperature (0.9) ---")
-    print(generate_response(user_prompt, temperature=0.9))
+# Print raw JSON response
+print("\nStructured JSON Output:")
+print(response.text)

@@ -7,42 +7,34 @@ env_path = os.path.join(os.path.dirname(__file__), ".env")
 load_dotenv(dotenv_path=env_path)
 api_key = os.getenv("GEMINI_API_KEY")
 
-# Configure Gemini
+# Configure Gemini API
 genai.configure(api_key=api_key)
 
-# Create model instance
+# Initialize model
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-# -------- Dynamic Prompting Example --------
-# Let's say we want to build a personalized travel recommendation system.
-# The prompt changes dynamically based on user inputs.
-
-def generate_dynamic_prompt(user_name, interests, budget, location):
-    return f"""
-    You are an AI travel assistant.
-
-    User Details:
-    - Name: {user_name}
-    - Interests: {", ".join(interests)}
-    - Budget: {budget}
-    - Current Location: {location}
-
-    Task:
-    Suggest 3 personalized travel destinations with short explanations 
-    that match the user's interests and budget.
+def generate_response(prompt, temperature=0.7):
     """
+    Generate AI response with a given temperature.
+    Default temperature is 0.7 (balanced creativity).
+    """
+    response = model.generate_content(
+        prompt,
+        generation_config={
+            "temperature": temperature
+        }
+    )
+    return response.text
 
-# Example: dynamic user input (could also come from API, DB, or CLI input)
-user_name = "Nidhi"
-interests = ["beaches", "history", "food"]
-budget = "₹50,000"
-location = "India"
+if __name__ == "__main__":
+    # Example prompts with different temperatures
+    user_prompt = "Write a short story about a cat who learns to code."
 
-# Build prompt dynamically
-dynamic_prompt = generate_dynamic_prompt(user_name, interests, budget, location)
+    print("\n--- Low Temperature (0.2) ---")
+    print(generate_response(user_prompt, temperature=0.2))
 
-# Get AI response
-response = model.generate_content(dynamic_prompt)
+    print("\n--- Medium Temperature (0.7) ---")
+    print(generate_response(user_prompt, temperature=0.7))
 
-# Print Output
-print("Dynamic Prompt Output:\n", response.text)
+    print("\n--- High Temperature (0.9) ---")
+    print(generate_response(user_prompt, temperature=0.9))
